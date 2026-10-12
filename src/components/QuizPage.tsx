@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { LeaderboardModal } from "@/components/LeaderboardModal";
+import { LiveLeaderboard } from "@/components/LiveLeaderboard";
 import { QuestionCard } from "@/components/QuestionCard";
 import { QuizCompleteBanner } from "@/components/QuizCompleteBanner";
 import { StickyScoreBar } from "@/components/StickyScoreBar";
@@ -14,6 +16,7 @@ import { useQuizProgress } from "@/hooks/useQuizProgress";
 export function QuizPage() {
   const router = useRouter();
   const { progress, hydrated, syncError, submitAnswer } = useQuizProgress();
+  const [leaderboardOpen, setLeaderboardOpen] = useState(false);
 
   const totals = useMemo(() => getProgressTotals(progress), [progress]);
 
@@ -47,60 +50,86 @@ export function QuizPage() {
         nickname={progress.nickname}
         score={totals.score}
         answeredCount={totals.answeredCount}
+        onOpenLeaderboard={() => setLeaderboardOpen(true)}
       />
-      <div className="mx-auto max-w-3xl px-4 py-6">
-        {syncError && (
-          <p className="mb-4 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-            {syncError}
-          </p>
-        )}
+      <LeaderboardModal
+        open={leaderboardOpen}
+        onClose={() => setLeaderboardOpen(false)}
+      />
 
-        {allDone && (
-          <QuizCompleteBanner score={totals.score} nickname={progress.nickname} />
-        )}
+      <div className="mx-auto max-w-6xl px-4 py-6 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(280px,320px)] lg:items-start lg:gap-8">
+        <div className="min-w-0">
+          {syncError && (
+            <p className="mb-4 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+              {syncError}
+            </p>
+          )}
 
-        <div className="mb-6 flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={scrollToFirstOpen}
-            className="rounded-full border border-emerald-800/25 bg-white px-4 py-2 text-sm font-medium text-emerald-900 shadow-sm hover:bg-emerald-50"
-          >
-            ⏬ Następne bez odpowiedzi
-          </button>
+          {allDone && (
+            <QuizCompleteBanner
+              score={totals.score}
+              nickname={progress.nickname}
+            />
+          )}
+
+          <div className="mb-6 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={scrollToFirstOpen}
+              className="rounded-full border border-emerald-800/25 bg-white px-4 py-2 text-sm font-medium text-emerald-900 shadow-sm hover:bg-emerald-50"
+            >
+              ⏬ Następne bez odpowiedzi
+            </button>
+            <button
+              type="button"
+              onClick={() => setLeaderboardOpen(true)}
+              className="rounded-full border border-emerald-800/25 bg-emerald-800 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 lg:hidden"
+            >
+              📊 Tablica
+            </button>
+          </div>
+
+          {ROUNDS.map((round) => {
+            const roundAnswered = round.questionIds.filter(
+              (id) => progress.answers[id],
+            ).length;
+            const roundTotal = round.questionIds.length;
+            return (
+              <section key={round.id} className="mb-12">
+                <div className="mb-4 flex flex-wrap items-end justify-between gap-2 border-b border-emerald-900/15 pb-2">
+                  <h2 className="text-lg font-bold text-emerald-950 sm:text-xl">
+                    Runda {round.id} — {round.title}
+                  </h2>
+                  <span className="text-sm text-stone-600">
+                    {roundAnswered}/{roundTotal} · do {round.pointsPerQuestion}{" "}
+                    pkt
+                  </span>
+                </div>
+                <div className="flex flex-col gap-5">
+                  {round.questionIds.map((qid) => {
+                    const question = QUESTIONS_BY_ID.get(qid);
+                    if (!question) return null;
+                    return (
+                      <QuestionCard
+                        key={qid}
+                        question={question}
+                        answer={progress.answers[qid]}
+                        onAnswer={submitAnswer}
+                      />
+                    );
+                  })}
+                </div>
+              </section>
+            );
+          })}
         </div>
 
-        {ROUNDS.map((round) => {
-          const roundAnswered = round.questionIds.filter(
-            (id) => progress.answers[id],
-          ).length;
-          const roundTotal = round.questionIds.length;
-          return (
-            <section key={round.id} className="mb-12">
-              <div className="mb-4 flex flex-wrap items-end justify-between gap-2 border-b border-emerald-900/15 pb-2">
-                <h2 className="text-lg font-bold text-emerald-950 sm:text-xl">
-                  Runda {round.id} — {round.title}
-                </h2>
-                <span className="text-sm text-stone-600">
-                  {roundAnswered}/{roundTotal} · do {round.pointsPerQuestion} pkt
-                </span>
-              </div>
-              <div className="flex flex-col gap-5">
-                {round.questionIds.map((qid) => {
-                  const question = QUESTIONS_BY_ID.get(qid);
-                  if (!question) return null;
-                  return (
-                    <QuestionCard
-                      key={qid}
-                      question={question}
-                      answer={progress.answers[qid]}
-                      onAnswer={submitAnswer}
-                    />
-                  );
-                })}
-              </div>
-            </section>
-          );
-        })}
+        <aside
+          className="hidden lg:block lg:sticky lg:top-[7.5rem] lg:max-h-[calc(100vh-8.5rem)] lg:overflow-y-auto lg:rounded-2xl lg:border lg:border-emerald-900/10 lg:bg-white/90 lg:p-4 lg:shadow-md lg:backdrop-blur"
+          aria-label="Tablica wyników"
+        >
+          <LiveLeaderboard compact showHeader />
+        </aside>
       </div>
     </>
   );

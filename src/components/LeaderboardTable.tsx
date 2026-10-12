@@ -7,9 +7,11 @@ import { MAX_SCORE, TOTAL_QUESTIONS, type PlayerState } from "@/types/quiz";
 type Props = {
   players: PlayerState[];
   currentPlayerId?: string;
+  compact?: boolean;
 };
 
-function Podium({ players }: { players: PlayerState[] }) {
+function Podium({ players, compact }: { players: PlayerState[]; compact?: boolean }) {
+  if (compact) return null;
   const top = players.slice(0, 3);
   if (top.length === 0) return null;
   const order = [top[1], top[0], top[2]].filter(Boolean);
@@ -45,7 +47,11 @@ function Podium({ players }: { players: PlayerState[] }) {
   );
 }
 
-export function LeaderboardTable({ players, currentPlayerId }: Props) {
+export function LeaderboardTable({
+  players,
+  currentPlayerId,
+  compact = false,
+}: Props) {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   if (players.length === 0) {
@@ -59,7 +65,7 @@ export function LeaderboardTable({ players, currentPlayerId }: Props) {
 
   return (
     <div>
-      {players.length >= 2 && <Podium players={players} />}
+      {players.length >= 2 && <Podium players={players} compact={compact} />}
       <ul className="space-y-2">
         {players.map((player, index) => {
           const isYou = player.playerId === currentPlayerId;
@@ -75,7 +81,9 @@ export function LeaderboardTable({ players, currentPlayerId }: Props) {
             >
               <button
                 type="button"
-                className="flex w-full items-center gap-3 px-4 py-3 text-left"
+                className={`flex w-full items-center gap-2 text-left ${
+                  compact ? "px-3 py-2" : "gap-3 px-4 py-3"
+                }`}
                 onClick={() =>
                   setExpanded(open ? null : player.playerId)
                 }

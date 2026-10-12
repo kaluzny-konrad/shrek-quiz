@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ProgressBar } from "@/components/ProgressBar";
 import { MAX_SCORE, TOTAL_QUESTIONS } from "@/types/quiz";
@@ -6,13 +8,19 @@ type Props = {
   nickname: string;
   score: number;
   answeredCount: number;
+  onOpenLeaderboard?: () => void;
 };
 
-export function StickyScoreBar({ nickname, score, answeredCount }: Props) {
+export function StickyScoreBar({
+  nickname,
+  score,
+  answeredCount,
+  onOpenLeaderboard,
+}: Props) {
   const done = answeredCount >= TOTAL_QUESTIONS;
   return (
     <div className="sticky top-0 z-20 border-b border-emerald-900/30 bg-emerald-950/95 text-emerald-50 shadow-lg backdrop-blur-md">
-      <div className="mx-auto max-w-3xl space-y-2 px-4 py-3">
+      <div className="mx-auto max-w-6xl space-y-2 px-4 py-3">
         <div className="flex flex-wrap items-center justify-between gap-2 text-sm sm:text-base">
           <div className="font-semibold">
             <span className="text-emerald-300">{nickname}</span>
@@ -37,12 +45,15 @@ export function StickyScoreBar({ nickname, score, answeredCount }: Props) {
             >
               Start
             </Link>
-            <Link
-              href="/tablica"
-              className="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-500"
-            >
-              Tablica
-            </Link>
+            {onOpenLeaderboard && (
+              <button
+                type="button"
+                onClick={onOpenLeaderboard}
+                className="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-500 lg:hidden"
+              >
+                Tablica
+              </button>
+            )}
           </div>
         </div>
         <ProgressBar

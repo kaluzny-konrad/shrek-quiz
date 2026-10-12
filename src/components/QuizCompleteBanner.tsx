@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { MAX_SCORE } from "@/types/quiz";
 
 type Props = {
@@ -22,12 +21,9 @@ export function QuizCompleteBanner({ score, nickname }: Props) {
         pkt ({pct}%)
       </p>
       <p className="mt-3 text-sm text-emerald-200">{message}</p>
-      <Link
-        href="/tablica"
-        className="mt-4 inline-block rounded-xl bg-white px-5 py-2.5 font-semibold text-emerald-900 hover:bg-emerald-50"
-      >
-        Zobacz się na tablicy
-      </Link>
+      <p className="mt-4 text-sm text-emerald-200">
+        Sprawdź tablicę po prawej (desktop) lub przycisk „Tablica” na telefonie.
+      </p>
     </div>
   );
 }
