@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { QUESTIONS_BY_ID } from "@/data/questions";
 import { hostSessionAction } from "@/lib/api";
 import { isQuizFinished } from "@/lib/quiz";
@@ -14,13 +14,11 @@ export function HostClient() {
   const { session, totalQuestions, refresh } = usePartySession();
   const { players, refresh: refreshBoard } = useLeaderboard();
   const [hostKey, setHostKey] = useState("");
-  const [savedKey, setSavedKey] = useState("");
+  const [savedKey, setSavedKey] = useState(
+    () => localStorage.getItem(HOST_KEY_STORAGE) ?? "",
+  );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setSavedKey(localStorage.getItem(HOST_KEY_STORAGE) ?? "");
-  }, []);
 
   const currentId = session?.currentQuestionId ?? 1;
   const question = QUESTIONS_BY_ID.get(currentId);

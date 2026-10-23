@@ -23,9 +23,18 @@ export function usePartySession() {
   }, []);
 
   useEffect(() => {
-    void refresh();
-    const id = setInterval(() => void refresh(), POLL_MS);
-    return () => clearInterval(id);
+    let cancelled = false;
+    const tick = () => {
+      if (cancelled) return;
+      void refresh();
+    };
+    const timeoutId = setTimeout(tick, 0);
+    const intervalId = setInterval(tick, POLL_MS);
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+      clearInterval(intervalId);
+    };
   }, [refresh]);
 
   return { session, totalQuestions, error, refresh };
