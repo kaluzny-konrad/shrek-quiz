@@ -9,6 +9,8 @@ type Props = {
   score: number;
   answeredCount: number;
   onOpenLeaderboard?: () => void;
+  currentQuestion?: number;
+  totalQuestions?: number;
 };
 
 export function StickyScoreBar({
@@ -16,6 +18,8 @@ export function StickyScoreBar({
   score,
   answeredCount,
   onOpenLeaderboard,
+  currentQuestion,
+  totalQuestions = TOTAL_QUESTIONS,
 }: Props) {
   const done = answeredCount >= TOTAL_QUESTIONS;
   return (
@@ -30,8 +34,16 @@ export function StickyScoreBar({
             </span>
             <span className="mx-2 text-emerald-700">·</span>
             <span>
-              {answeredCount} / {TOTAL_QUESTIONS}
+              {answeredCount} / {TOTAL_QUESTIONS} odp.
             </span>
+            {currentQuestion != null && (
+              <>
+                <span className="mx-2 text-emerald-700">·</span>
+                <span className="text-emerald-200">
+                  na ekranie #{currentQuestion}/{totalQuestions}
+                </span>
+              </>
+            )}
             {done && (
               <span className="ml-2 rounded-full bg-[var(--swamp-gold)] px-2 py-0.5 text-xs font-bold text-emerald-950">
                 Koniec!

@@ -50,6 +50,22 @@ export async function savePlayer(state: PlayerState): Promise<void> {
   await client.sadd(PLAYERS_INDEX_KEY, state.playerId);
 }
 
+export async function clearAllPlayers(): Promise<void> {
+  const client = redis();
+  if (!client) {
+    const mem = memory();
+    mem.players.clear();
+    mem.index = [];
+    return;
+  }
+  const ids = await client.smembers<string[]>(PLAYERS_INDEX_KEY);
+  if (ids?.length) {
+    const keys = ids.map((id) => `${PLAYER_PREFIX}${id}`);
+    await client.del(...keys);
+  }
+  await client.del(PLAYERS_INDEX_KEY);
+}
+
 export async function listPlayers(): Promise<PlayerState[]> {
   const client = redis();
   if (!client) {

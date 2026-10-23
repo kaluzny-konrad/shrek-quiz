@@ -1,47 +1,34 @@
-# Shrek Pub Quiz
+# Quiz imprezowy
 
-Quiz wielokrotnego wyboru o uniwersum Shreka — **43 pytania**, **76 pkt** max, tablica wyników na żywo.
+Synchronizowany quiz ABCD: **1670**, **Halloween**, **Zwierzogród** (18 pytań).
 
-Źródło pytań: [`shrek_pub_quiz_master.md`](./shrek_pub_quiz_master.md).
+## Impreza (8 osób)
+
+1. **Prowadzący** — otwórz `/host`, klucz domyślny: `impreza` (zmienna `HOST_SECRET` na Vercel).
+2. Przed startem: **„Wyczyść bazę przed imprezą”** (czyści graczy + pytanie 1).
+3. **Gracze** — `/` → nick → `/quiz` (wszyscy widzą to samo pytanie).
+4. Po odpowiedziach: prowadzący → **Następne pytanie**.
+
+**Redis (Upstash) na Vercel jest wymagany** — bez tego sesja nie synchronizuje się między telefonami.
 
 ## Lokalnie
 
 ```bash
 npm install
-npm run dev
+npm run build
+npm run start
 ```
 
-[http://localhost:3000](http://localhost:3000)
+## Vercel
 
-Bez Redis API trzyma graczy w **pamięci jednego procesu** (OK do testów na laptopie). Na produkcji podłącz storage.
+- Repo → Import → Next.js
+- Marketplace → **Redis** → `KV_REST_API_URL`, `KV_REST_API_TOKEN`
+- Opcjonalnie: `HOST_SECRET=impreza`
 
-## Deploy na Vercel
+## API (prowadzący)
 
-1. **Utwórz projekt** w Vercel i połącz to repozytorium (framework: Next.js).
-2. W projekcie: **Marketplace → Redis** (Upstash) → dodaj do projektu.
-3. Zmienne (zwykle ustawia integracja):
-   - `KV_REST_API_URL`
-   - `KV_REST_API_TOKEN`
-4. Deploy z gałęzi `main`. Każdy push = nowy preview/produkcja.
+`POST /api/session` z nagłówkiem `x-host-secret` i body:
 
-Lokalnie z produkcyjnym Redis:
-
-```bash
-vercel env pull .env.local
-npm run dev
-```
-
-## Strony
-
-| Ścieżka    | Opis |
-| ---------- | ---- |
-| `/`        | Nick, start, postęp |
-| `/quiz`    | Wszystkie pytania + sticky wynik |
-| `/tablica` | Ranking + mapa odpowiedzi |
-
-## Skrypty
-
-- `npm run dev` — development
-- `npm run build` — build produkcyjny (walidacja pytań przy starcie)
-- `npm run start` — serwer po buildzie
-- `npm run lint` — ESLint
+- `{ "action": "next" }` — kolejne pytanie
+- `{ "action": "reset" }` — pytanie 1, gracze zostają
+- `{ "action": "resetAll" }` — pusta baza + pytanie 1

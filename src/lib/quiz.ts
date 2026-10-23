@@ -1,4 +1,13 @@
 import type { OptionId, QuizQuestion } from "@/types/quiz";
+import { TOTAL_QUESTIONS } from "@/types/quiz";
+
+export type PartySessionView = {
+  currentQuestionId: number;
+};
+
+export function isQuizFinished(session: PartySessionView): boolean {
+  return session.currentQuestionId > TOTAL_QUESTIONS;
+}
 
 export function seededShuffleOrder(questionId: number): OptionId[] {
   const order: OptionId[] = ["a", "b", "c", "d"];

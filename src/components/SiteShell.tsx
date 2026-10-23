@@ -15,10 +15,10 @@ export function SiteShell({ children }: Props) {
               className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-800 text-lg shadow-inner"
               aria-hidden
             >
-              🧅
+              🎃
             </span>
             <span className="font-bold text-emerald-950 group-hover:text-emerald-700">
-              Shrek Pub Quiz
+              Quiz imprezowy
             </span>
           </Link>
           <nav className="flex gap-1 text-sm font-medium sm:gap-2">
@@ -27,6 +27,12 @@ export function SiteShell({ children }: Props) {
               className="rounded-lg px-3 py-1.5 text-emerald-900 hover:bg-emerald-100"
             >
               Quiz
+            </Link>
+            <Link
+              href="/host"
+              className="rounded-lg px-3 py-1.5 text-emerald-900 hover:bg-emerald-100"
+            >
+              Prowadzący
             </Link>
             <Link
               href="/tablica"
@@ -39,7 +45,7 @@ export function SiteShell({ children }: Props) {
       </header>
       <div className="flex-1">{children}</div>
       <footer className="border-t border-emerald-900/10 py-4 text-center text-xs text-stone-500">
-        Bagno, cebule i trivia — nieoficjalny fan quiz 🟢
+        1670 · Halloween · Zwierzogród
       </footer>
     </div>
   );

@@ -70,22 +70,23 @@ export function HomeClient() {
   };
 
   if (!hydrated) {
-    return <p className="text-center text-stone-600">Ładowanie bagna…</p>;
+    return <p className="text-center text-stone-600">Ładowanie…</p>;
   }
 
   return (
     <div className="space-y-10">
       <header className="space-y-4 text-center">
-        <p className="text-5xl sm:text-6xl" aria-hidden>🧅</p>
+        <p className="text-5xl sm:text-6xl" aria-hidden>🎬</p>
         <h1 className="text-3xl font-black tracking-tight text-emerald-950 sm:text-5xl">
-          Shrek Pub Quiz
+          Quiz imprezowy
         </h1>
         <p className="mx-auto max-w-lg text-lg text-stone-700">
-          {TOTAL_QUESTIONS} pytań, {MAX_SCORE} punktów do zdobycia. Odpowiadaj w
-          dowolnym tempie — postęp zapisuje się u Ciebie i leci na tablicę.
-        </p>
-        <p className="text-sm font-medium text-emerald-800">
-          „Ogry są jak cebula… a Ty jesteś gotów na warstwy wiedzy?”
+          {TOTAL_QUESTIONS} pytań (1670, Halloween, Zwierzogród). Wszyscy widzą
+          to samo pytanie — prowadzący przechodzi dalej na{" "}
+          <Link href="/host" className="font-semibold text-emerald-800 underline">
+            /host
+          </Link>
+          .
         </p>
       </header>
 

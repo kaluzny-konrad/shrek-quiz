@@ -1,4 +1,31 @@
+import type { PartySession } from "@/lib/party-session";
 import type { OptionId, PlayerState } from "@/types/quiz";
+
+export async function fetchPartySession(): Promise<{
+  session: PartySession;
+  totalQuestions: number;
+}> {
+  const res = await fetch("/api/session", { cache: "no-store" });
+  if (!res.ok) throw new Error("Nie udało się pobrać sesji.");
+  return res.json() as Promise<{ session: PartySession; totalQuestions: number }>;
+}
+
+export async function hostSessionAction(
+  hostSecret: string,
+  action: "next" | "reset" | "resetAll",
+): Promise<{ session: PartySession; totalQuestions: number; cleared?: boolean }> {
+  const res = await fetch("/api/session", {
+    cache: "no-store",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-host-secret": hostSecret,
+    },
+    body: JSON.stringify({ action }),
+  });
+  if (!res.ok) throw new Error("Akcja prowadzącego nieudana.");
+  return res.json() as Promise<{ session: PartySession; totalQuestions: number }>;
+}
 
 export async function registerPlayer(
   playerId: string,

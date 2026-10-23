@@ -7,6 +7,7 @@ import {
 import type { OptionId } from "@/types/quiz";
 import { QUESTIONS_BY_ID } from "@/data/questions";
 import { gradeAnswer } from "@/lib/quiz";
+import { getPartySession, isQuizFinished } from "@/lib/party-session";
 
 export async function POST(
   request: Request,
@@ -31,15 +32,30 @@ export async function POST(
     return NextResponse.json({ error: "Brak pytania lub odpowiedzi." }, { status: 400 });
   }
 
+  const session = await getPartySession();
+  if (isQuizFinished(session)) {
+    return NextResponse.json({ error: "Quiz zakończony." }, { status: 400 });
+  }
+  if (questionId !== session.currentQuestionId) {
+    return NextResponse.json(
+      { error: "To nie jest aktualne pytanie na ekranie." },
+      { status: 409 },
+    );
+  }
+
   const question = QUESTIONS_BY_ID.get(questionId);
   if (!question) {
     return NextResponse.json({ error: "Nieznane pytanie." }, { status: 404 });
   }
 
+  const existing = await getPlayer(playerId);
+  if (existing?.answers[questionId]) {
+    return NextResponse.json({ error: "Już odpowiedziałeś na to pytanie." }, { status: 409 });
+  }
+
   const { correct, pointsEarned } = gradeAnswer(question, selectedOptionId);
   const answeredAt = body.answeredAt ?? new Date().toISOString();
 
-  const existing = await getPlayer(playerId);
   const state = mergeAnswerIntoState(existing, playerId, nickname, questionId, {
     correct,
     pointsEarned,

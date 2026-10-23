@@ -1,4 +1,4 @@
-export type RoundId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+export type RoundId = 1 | 2 | 3;
 
 export type OptionId = "a" | "b" | "c" | "d";
 
@@ -48,6 +48,6 @@ export type PlayerState = {
   updatedAt: string;
 };
 
-export const TOTAL_QUESTIONS = 43;
-export const MAX_SCORE = 76;
-export const PROGRESS_STORAGE_KEY = "shrek-quiz-progress-v1";
+export const TOTAL_QUESTIONS = 18;
+export const MAX_SCORE = 18;
+export const PROGRESS_STORAGE_KEY = "party-quiz-progress-v1";

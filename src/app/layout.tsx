@@ -15,13 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Shrek Pub Quiz",
-  description:
-    "43 pytań o Shreku — quiz ABCD z tablicą wyników na żywo. Zagraj z drużyną!",
-  openGraph: {
-    title: "Shrek Pub Quiz",
-    description: "Bagno czeka. Pokaż, że znasz warstwy jak cebula.",
-  },
+  title: "Quiz imprezowy",
+  description: "1670, Halloween, Zwierzogród — quiz na 8 osób, zsynchronizowany.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
